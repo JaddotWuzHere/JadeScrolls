@@ -1,14 +1,23 @@
 "use client";
 
 import { useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 
-export default function SignInPage() {
+export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        router.replace("/dashboard");
+      }
+    });
+  }, [router]);
 
   async function signIn() {
     setLoading(true);
@@ -27,7 +36,7 @@ export default function SignInPage() {
     }
 
     // success → go Home (don’t set user state here to avoid UI flash)
-    router.replace("/");
+    router.replace("/dashboard");
   }
 
   async function signUp() {
